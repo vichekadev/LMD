@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LMD - Warehouse Tracker</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="icon" type="image/x-icon" href="./images/logo.png">
+
+</head>
+<body>
+
+    <header style="margin-bottom: 24px;">
+        <h2 style="margin: 0; font-size: 28px; font-weight: 800;">📦 LMD </h2>
+        <div class="muted small" style="margin-top: 4px; font-size: 13px;">Logistics Management Dashboard</div>
+    </header>
+
+    <!-- Navigation Tabs System -->
+    <section id="panel-search" class="panel hidden">
+        <label>🔍 Search Pallet</label>
+        <div class="search-row">
+            <input id="q" class="search-input" type="search" placeholder="Enter Barcode or Pallet ID..." aria-label="Search pallet">
+            <button class="btn" id="search-go" style="font-size: 20px;">🔍</button>
+        </div>
+        <div id="search-results" style="margin-top: 20px;">
+            <div class="muted" style="text-align: center; padding: 40px 20px; font-size: 14px;">
+                ↓<br>Enter a pallet ID or barcode to search
+            </div>
+        </div>
+    </section>
+
+    <section id="panel-scan" class="panel">
+        <div class="scan-area">
+            <label>Scan Pallet Barcode</label>
+            <div class="camera-preview" id="preview">
+                <div id="preview-text">📷 Point camera at barcode</div>
+                <img id="captured-image" class="hidden" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+            <input accept="image/*" capture="environment" id="camera" type="file">
+            
+            <!-- Large Scan Button -->
+            <button class="confirm-btn" id="btn-open-camera" style="margin-bottom: 20px; font-size: 20px;">
+                <!-- 📷 SCAN BARCODE -->
+
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; vertical-align: middle;">
+                    <!-- ស៊ុមជ្រុង -->
+                    <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                    <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                    <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                    <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                    <!-- ឆ្នូត Barcode ខាងក្នុង -->
+                    <line x1="8" y1="7" x2="8" y2="17"></line>
+                    <line x1="12" y1="7" x2="12" y2="17"></line>
+                    <line x1="16" y1="7" x2="16" y2="17"></line>
+                </svg>
+                SCAN BARCODE
+
+            </button>
+
+
+
+
+
+            <!-- Pallet ID Display -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div class="muted small" style="margin-bottom: 8px;">Detected Pallet ID</div>
+                <div id="selected-id" style="font-weight: 800; font-size: 24px; color: var(--primary);">—</div>
+            </div>
+
+            <!-- Item Details Card (Shown after scan) -->
+            <div id="item-card" class="hidden">
+                <div style="background: #f9f9f9; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                    <div class="item-title" id="item-title">Pallet #45621</div>
+                    <div class="muted small" id="item-sub" style="margin-bottom: 12px;">Aisle 2 · Rack C</div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div class="muted small" style="margin-bottom: 4px;">Current Status</div>
+                            <div id="item-status" class="status-chip in-stock">In Stock</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="muted small" style="margin-bottom: 4px;">Last Updated</div>
+                            <div class="muted small" id="last-updated">12m ago</div>
+                        </div>
+                    </div>
+                </div>
+
+                <label for="status">UPDATE STATUS TO:</label>
+                <select id="status" class="status-select">
+                    <option value="in_stock">In Stock</option>
+                    <option value="staged" selected>Staged for Shipping</option>
+                    <option value="damaged">Damaged</option>
+                    <option value="quarantine">Quarantine</option>
+                </select>
+
+                <div class="confirm-row">
+                    <button class="confirm-btn" id="confirm-update">✓ CONFIRM UPDATE</button>
+                    <button class="cancel-btn" id="cancel-update">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="panel-alerts" class="panel hidden">
+        <label>🔔 ACTIVE ALERTS</label>
+        
+        <div class="alert" style="font-size: 16px;">
+            ⚠️ PRIORITY SHIPMENT DUE IN 24H
+            <div style="font-weight: 600; font-size: 14px; margin-top: 4px;">Check staging area immediately</div>
+        </div>
+
+        <div style="margin-top: 24px;">
+            <label style="font-size: 14px; margin-bottom: 12px;">Pending Updates:</label>
+            
+            <div class="list-item">
+                <div>
+                    <div style="font-weight: 700; font-size: 16px;">Pallet 98732</div>
+                    <div class="muted small">Aisle 4 · Rack B</div>
+                </div>
+                <div class="status-chip staged">Staged</div>
+            </div>
+
+            <div class="list-item">
+                <div>
+                    <div style="font-weight: 700; font-size: 16px;">Pallet 12901</div>
+                    <div class="muted small">Aisle 10 · Rack A</div>
+                </div>
+                <div style="text-align: right;">
+                    <span class="alert" style="display: inline-block; padding: 4px 8px; background: #fff3e0; border: none; margin: 0; font-size: 12px;">Low Stock Warning</span>
+                </div>
+            </div>
+
+            <div class="list-item">
+                <div>
+                    <div style="font-weight: 700; font-size: 16px;">Pallet 67543</div>
+                    <div class="muted small">Aisle 6 · Rack D</div>
+                </div>
+                <div class="status-chip damaged" style="background: #ffebee; color: #c62828;">Damaged</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <div>
+                <div style="font-weight: 800; font-size: 18px;">📋 Recent Updates</div>
+                <div class="muted small">Your last 5 actions today</div>
+            </div>
+            <button class="secondary" id="clear-history">Clear</button>
+        </div>
+        <div id="history">
+            <div class="list-item">
+                <div>
+                    <div style="font-weight: 700; font-size: 16px;">Pallet 45621</div>
+                    <div class="muted small">Aisle 2 · Rack C</div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="status-chip staged">Staged</div>
+                    <div class="muted small" style="margin-top: 4px; font-size: 12px;">2m ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    
+    <nav class="nav-bar">
+        <div class="nav-item" id="nav-search" onclick="showPanel('search')" title="Search for pallets">
+            <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Search</span>
+        </div>
+        <!-- <div class="nav-item active" id="nav-scan" onclick="showPanel('scan')" title="Scan barcode">
+            <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            <span>Scan</span>
+        </div> -->
+
+        <div class="nav-item active" id="nav-scan" onclick="showPanel('scan')" title="Scan barcode">
+            <!-- រូប Barcode Scanner ថ្មី -->
+            <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <!-- ស៊ុមជ្រុងទាំង ៤ (Scanner Frame) -->
+                <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                
+                <!-- ឆ្នូត Barcode (Vertical lines) -->
+                <line x1="7" y1="8" x2="7" y2="16"></line>
+                <line x1="10" y1="8" x2="10" y2="16"></line>
+                <line x1="14" y1="8" x2="14" y2="16"></line>
+                <line x1="17" y1="8" x2="17" y2="16"></line>
+                
+                <!-- ខ្សែស្កេនពណ៌ក្រហមចំកណ្តាល (Red Scan Line) -->
+                <line x1="2" y1="12" x2="22" y2="12" stroke="#e74c3c" stroke-width="1.5"></line>
+            </svg>
+            <span>Scan</span>
+        </div>
+
+
+        <div class="nav-item" id="nav-alerts" onclick="showPanel('alerts')" title="View alerts">
+            <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span>Alerts</span>
+        </div>
+    </nav>
+
+
+    <script src="./index.js"></script>
+
+</body>
+</html>
